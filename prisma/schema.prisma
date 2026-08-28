@@ -1,0 +1,488 @@
+// Eshcol Harvest Hub — Prisma schema
+// PostgreSQL. IDs: cuid. Money: Decimal (never float). Status: enums.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  FARM_MANAGER
+  SALES_MANAGER
+  INVENTORY_MANAGER
+  CONTENT_MANAGER
+  DELIVERY_MANAGER
+  CUSTOMER
+}
+
+enum CustomerType {
+  HOUSEHOLD
+  RETAILER
+  OFFTAKER
+  OTHER
+}
+
+enum Unit {
+  KILOGRAM
+  GRAM
+  PIECE
+  CRATE
+  BAG
+  BOX
+  CUSTOM
+}
+
+enum ProductStatus {
+  IN_STOCK
+  LIMITED_STOCK
+  COMING_SOON
+  SEASONAL
+  SOLD_OUT
+}
+
+enum FulfilmentType {
+  PICKUP
+  DELIVERY
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum OrderStatus {
+  PENDING
+  PAYMENT_PENDING
+  PAID
+  PROCESSING
+  READY
+  OUT_FOR_DELIVERY
+  READY_FOR_PICKUP
+  DELIVERED
+  PICKED_UP
+  CANCELLED
+  FAILED
+}
+
+enum BulkCustomerType {
+  RETAILER
+  OFFTAKER
+  RESTAURANT
+  HOTEL
+  CATERER
+  DISTRIBUTOR
+  OTHER
+}
+
+enum Frequency {
+  ONE_TIME
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+  OTHER
+}
+
+enum BulkStatus {
+  NEW
+  REVIEWING
+  CONTACTED
+  QUOTED
+  AGREED
+  FULFILLING
+  COMPLETED
+  CANCELLED
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+  UNPUBLISHED
+}
+
+enum DeliveryStatus {
+  PENDING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  FAILED
+}
+
+enum HarvestStatus {
+  PLANNED
+  IN_PROGRESS
+  HARVESTED
+  CANCELLED
+}
+
+// ---------------------------------------------------------------------------
+// Users & customers
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String?
+  role          Role      @default(CUSTOMER)
+  emailVerified DateTime?
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  customerProfile CustomerProfile?
+  addresses       Address[]
+  orders          Order[]
+  posts           BlogPost[]
+
+  @@index([role])
+}
+
+model CustomerProfile {
+  id             String       @id @default(cuid())
+  userId         String       @unique
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  customerType   CustomerType @default(HOUSEHOLD)
+  companyName    String?
+  phone          String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label        String?
+  line1        String
+  line2        String?
+  city         String
+  state        String
+  postalCode   String?
+  country      String   @default("Nigeria")
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ---------------------------------------------------------------------------
+// Catalogue
+// ---------------------------------------------------------------------------
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+
+  @@index([slug])
+}
+
+model Product {
+  id                String        @id @default(cuid())
+  categoryId        String
+  category          Category      @relation(fields: [categoryId], references: [id])
+  slug              String        @unique
+  name              String
+  description       String?
+  shortDescription  String?
+  unit              Unit          @default(KILOGRAM)
+  price             Decimal       @db.Decimal(12, 2)
+  compareAtPrice    Decimal?      @db.Decimal(12, 2)
+  status            ProductStatus @default(IN_STOCK)
+  published         Boolean       @default(true)
+  featured          Boolean       @default(false)
+  seasonal          Boolean       @default(false)
+  lowStockThreshold Int           @default(10)
+  metaTitle         String?
+  metaDescription   String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  images    ProductImage[]
+  inventory Inventory?
+  orderItems OrderItem[]
+
+  @@index([categoryId])
+  @@index([published])
+  @@index([status])
+}
+
+model ProductImage {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  url       String
+  alt       String?
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+model Inventory {
+  id               String   @id @default(cuid())
+  productId        String   @unique
+  product          Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  availableQty     Decimal  @db.Decimal(12, 2) @default(0)
+  reservedQty      Decimal  @db.Decimal(12, 2) @default(0)
+  soldQty          Decimal  @db.Decimal(12, 2) @default(0)
+  lowStockThreshold Int      @default(10)
+  updatedAt        DateTime @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Orders & payments
+// ---------------------------------------------------------------------------
+
+model Order {
+  id               String         @id @default(cuid())
+  orderNumber      String         @unique
+  userId           String?
+  user             User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  subtotal         Decimal        @db.Decimal(12, 2)
+  deliveryFee      Decimal        @db.Decimal(12, 2) @default(0)
+  total            Decimal        @db.Decimal(12, 2)
+  fulfilmentType   FulfilmentType
+  paymentStatus    PaymentStatus  @default(PENDING)
+  orderStatus      OrderStatus    @default(PENDING)
+  notes            String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  items            OrderItem[]
+  payment          Payment?
+  delivery         Delivery?
+
+  @@index([orderStatus])
+  @@index([paymentStatus])
+  @@index([createdAt])
+}
+
+model OrderItem {
+  id                  String   @id @default(cuid())
+  orderId             String
+  order               Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId           String?
+  product             Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  productNameSnapshot String
+  unitPrice           Decimal  @db.Decimal(12, 2)
+  quantity            Decimal  @db.Decimal(12, 2)
+  unit                Unit      @default(KILOGRAM)
+  lineTotal           Decimal  @db.Decimal(12, 2)
+
+  @@index([orderId])
+}
+
+model Payment {
+  id               String        @id @default(cuid())
+  orderId          String        @unique
+  order            Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  paystackRef      String        @unique
+  paystackSession  String?
+  amount           Decimal       @db.Decimal(12, 2)
+  currency         String        @default("NGN")
+  method           String?
+  status           PaymentStatus @default(PENDING)
+  verifiedAt       DateTime?
+  metadata         Json?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+}
+
+model Delivery {
+  id          String         @id @default(cuid())
+  orderId     String         @unique
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type        FulfilmentType
+  status      DeliveryStatus @default(PENDING)
+  recipientName String?
+  phone       String?
+  line1       String?
+  line2       String?
+  city        String?
+  state       String?
+  directions  String?
+  zoneName    String?
+  fee         Decimal        @db.Decimal(12, 2) @default(0)
+  notes       String?
+  deliveredAt DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model DeliveryZone {
+  id        String   @id @default(cuid())
+  name      String
+  area      String?
+  state     String   @default("Plateau")
+  fee       Decimal  @db.Decimal(12, 2) @default(0)
+  active    Boolean  @default(true)
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ---------------------------------------------------------------------------
+// Bulk order requests
+// ---------------------------------------------------------------------------
+
+model BulkOrderRequest {
+  id                  String           @id @default(cuid())
+  fullName            String
+  companyName         String?
+  phone               String
+  email               String
+  customerType        BulkCustomerType
+  product             String?
+  quantityRequired    String?
+  unit                String?
+  location            String?
+  preferredDate       DateTime?
+  frequency           Frequency        @default(ONE_TIME)
+  additionalInfo      String?
+  status              BulkStatus       @default(NEW)
+  assignedTo          String?
+  adminNotes          String?
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Farm production foundation
+// ---------------------------------------------------------------------------
+
+model Farm {
+  id          String       @id @default(cuid())
+  name        String
+  location    String?
+  address     String?
+  description String?
+  image       String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  cycles      FarmCycle[]
+}
+
+model FarmCycle {
+  id             String        @id @default(cuid())
+  farmId         String
+  farm           Farm          @relation(fields: [farmId], references: [id], onDelete: Cascade)
+  code           String        @unique
+  crop           String
+  plantingDate   DateTime?
+  expectedHarvest DateTime?
+  estimatedYield Decimal?      @db.Decimal(12, 2)
+  actualHarvest  Decimal?      @db.Decimal(12, 2)
+  status         HarvestStatus @default(PLANNED)
+  notes          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  harvests       Harvest[]
+
+  @@index([farmId])
+}
+
+model Harvest {
+  id        String        @id @default(cuid())
+  cycleId   String
+  cycle     FarmCycle     @relation(fields: [cycleId], references: [id], onDelete: Cascade)
+  date      DateTime      @default(now())
+  quantity  Decimal       @db.Decimal(12, 2)
+  unit      Unit          @default(KILOGRAM)
+  grade     String?
+  notes     String?
+  createdAt DateTime      @default(now())
+
+  @@index([cycleId])
+}
+
+// ---------------------------------------------------------------------------
+// Content (Farm Journal)
+// ---------------------------------------------------------------------------
+
+model BlogCategory {
+  id          String     @id @default(cuid())
+  name        String
+  slug        String     @unique
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  posts       BlogPost[]
+
+  @@index([slug])
+}
+
+model BlogPost {
+  id            String      @id @default(cuid())
+  authorId      String?
+  author        User?       @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  categoryId    String?
+  category      BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  title         String
+  slug          String      @unique
+  excerpt       String?
+  content       String      @db.Text
+  featuredImage String?
+  status        BlogStatus  @default(DRAFT)
+  publishedAt   DateTime?
+  metaTitle     String?
+  metaDescription String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status])
+  @@index([slug])
+  @@index([categoryId])
+}
+
+// ---------------------------------------------------------------------------
+// Communications
+// ---------------------------------------------------------------------------
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  phone     String?
+  subject   String?
+  message   String   @db.Text
+  resolved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([resolved])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

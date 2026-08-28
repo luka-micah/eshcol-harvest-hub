@@ -76,6 +76,32 @@ The frontend never touches the database directly — every read/write goes throu
 (`NEXT_PUBLIC_API_URL`). Business logic lives in `services/`; Express route handlers in `apps/api/src/routes`
 only orchestrate. Prices and inventory are always recomputed server-side; the client never dictates totals.
 
+## Deploying to Vercel (single project)
+
+Both the frontend and the API deploy from this one repository:
+
+- The Next.js frontend deploys normally.
+- The Express API is exposed on Vercel as a serverless function via `api/v1/[...slug].ts`, which
+  mounts the app from `apps/api/src` under `/api/v1/*`. `apps/api/src/index.ts` exports `createApp()`
+  and only calls `app.listen()` when **not** running on Vercel (`process.env.VERCEL` unset), so local
+  `npm run dev:api` still works.
+
+Set these in **Project → Settings → Environment Variables** (apply to Production):
+
+| Variable | Value |
+| --- | --- |
+| `NEXT_PUBLIC_API_URL` | Your site URL, e.g. `https://eshcol-harvest-hub.vercel.app` |
+| `NEXT_PUBLIC_APP_URL` | Same site URL |
+| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Paystack public key |
+| `NEXT_PUBLIC_WHATSAPP_NUMBER` | WhatsApp number |
+| `AUTH_SECRET` | Same value as the API (JWT verification runs on both) |
+| `DATABASE_URL` | Production Postgres (e.g. Neon) |
+| `WEB_ORIGIN` | Your site URL (API CORS) |
+| `PAYSTACK_SECRET_KEY`, `CLOUDINARY_*`, `RESEND_API_KEY`, `EMAIL_FROM` | backend-only secrets |
+
+`DATABASE_URL` and the secret keys are used only by the API; `AUTH_SECRET` must match between the web
+and API. `NEXT_PUBLIC_*` vars are inlined at build time, so set them **before** deploying.
+
 ## Notes
 
 - External integrations degrade gracefully when their API keys are absent (email logs to console, Cloudinary returns the original URL), so the app runs locally without all credentials.

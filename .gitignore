@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+.next/
+out/
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+
+# Local database (Postgres data dir used for local dev)
+.pgdata/
+
+# Logs
+*.log
+api.out.log
+api.err.log
+dev.out.log
+dev.err.log
+
+# OS / editor
+.DS_Store
+Thumbs.db
+
+# OpenCode
+.opencode/
+
+tsconfig.tsbuildinfo
+next-env.d.ts

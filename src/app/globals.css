@@ -1,0 +1,90 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-heading: "Georgia", "Iowan Old Style", "Times New Roman", serif;
+
+  --background: 40 33% 97%;
+  --foreground: 140 25% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 140 25% 12%;
+  --muted: 40 22% 92%;
+  --muted-foreground: 140 8% 38%;
+  --primary: 142 46% 27%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 38 40% 88%;
+  --secondary-foreground: 140 30% 18%;
+  --accent: 24 50% 46%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 65% 45%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 140 18% 84%;
+  --input: 140 18% 84%;
+  --ring: 142 46% 27%;
+  --radius: 0.75rem;
+}
+
+.dark {
+  --background: 140 25% 8%;
+  --foreground: 40 20% 95%;
+  --card: 140 22% 11%;
+  --card-foreground: 40 20% 95%;
+  --muted: 140 15% 18%;
+  --muted-foreground: 40 12% 70%;
+  --primary: 142 45% 42%;
+  --primary-foreground: 140 30% 8%;
+  --secondary: 140 18% 20%;
+  --secondary-foreground: 40 20% 95%;
+  --accent: 24 50% 52%;
+  --accent-foreground: 140 30% 8%;
+  --destructive: 0 60% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 140 15% 22%;
+  --input: 140 15% 22%;
+  --ring: 142 45% 42%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  h1, h2, h3, h4 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer components {
+  .container-px {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-md px-5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+  .btn-secondary {
+    @apply btn bg-secondary text-secondary-foreground hover:bg-secondary/80;
+  }
+  .btn-outline {
+    @apply btn border border-border bg-transparent hover:bg-muted;
+  }
+  .card {
+    @apply rounded-xl border border-border bg-card p-6 shadow-sm;
+  }
+  .input {
+    @apply flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-foreground;
+  }
+  .prose-brand {
+    @apply leading-relaxed text-foreground/80;
+  }
+}

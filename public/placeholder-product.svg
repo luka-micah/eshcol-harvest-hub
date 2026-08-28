@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Eshcol Harvest Hub product placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3f7ec"/>
+      <stop offset="1" stop-color="#e4eed6"/>
+    </linearGradient>
+    <radialGradient id="pep" cx="50%" cy="40%" r="65%">
+      <stop offset="0" stop-color="#8fc356"/>
+      <stop offset="1" stop-color="#3f7d29"/>
+    </radialGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <g transform="translate(400 315)">
+    <path d="M0 -150 C 95 -150 150 -80 150 10 C 150 120 80 185 0 185 C -80 185 -150 120 -150 10 C -150 -80 -95 -150 0 -150 Z" fill="url(#pep)"/>
+    <path d="M0 -150 C -10 -120 -10 -120 -28 -150 C -18 -160 18 -160 28 -150 C 10 -120 10 -120 0 -150 Z" fill="#2f5e20"/>
+    <path d="M-22 -140 C -55 -130 -78 -150 -92 -170 C -64 -150 -44 -150 -22 -140 Z" fill="#2f5e20"/>
+    <path d="M22 -140 C 55 -130 78 -150 92 -170 C 64 -150 44 -150 22 -140 Z" fill="#2f5e20"/>
+    <path d="M-60 0 C -40 30 -40 70 -70 100" stroke="#2f5e20" stroke-width="6" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <path d="M60 0 C 40 30 40 70 70 100" stroke="#2f5e20" stroke-width="6" fill="none" opacity="0.5" stroke-linecap="round"/>
+    <ellipse cx="-45" cy="-40" rx="22" ry="34" fill="#ffffff" opacity="0.18"/>
+  </g>
+  <text x="400" y="540" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#3f7d29" font-weight="700">Eshcol Harvest Hub</text>
+</svg>

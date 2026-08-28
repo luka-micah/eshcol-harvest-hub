@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-label="Eshcol Harvest Hub farm">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eaf3dd"/>
+      <stop offset="1" stop-color="#cfe3b3"/>
+    </linearGradient>
+    <linearGradient id="field" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#7bb34a"/>
+      <stop offset="1" stop-color="#3f7d29"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="1000" fill="url(#sky)"/>
+  <circle cx="620" cy="180" r="90" fill="#f4e7b6" opacity="0.8"/>
+  <path d="M0 620 C 200 560 600 600 800 560 L 800 1000 L 0 1000 Z" fill="url(#field)"/>
+  <g fill="#2f5e20" opacity="0.85">
+    <path d="M150 640 C 150 600 170 580 190 590 C 175 620 175 650 150 640 Z"/>
+    <path d="M300 660 C 300 620 320 600 340 610 C 325 640 325 670 300 660 Z"/>
+    <path d="M470 650 C 470 610 490 590 510 600 C 495 630 495 660 470 650 Z"/>
+    <path d="M630 670 C 630 630 650 610 670 620 C 655 650 655 680 630 670 Z"/>
+  </g>
+  <g transform="translate(400 470)">
+    <path d="M0 -120 C 76 -120 120 -64 120 8 C 120 96 64 148 0 148 C -64 148 -120 96 -120 8 C -120 -64 -76 -120 0 -120 Z" fill="#4e8c33"/>
+    <path d="M0 -120 C -18 -96 -18 -96 -36 -120 C -24 -130 24 -130 36 -120 C 18 -96 18 -96 0 -120 Z" fill="#284f1b"/>
+    <ellipse cx="-36" cy="-32" rx="18" ry="28" fill="#ffffff" opacity="0.16"/>
+  </g>
+  <text x="400" y="930" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="34" fill="#1f3d14" font-weight="700">Fresh From Our Farm</text>
+</svg>
