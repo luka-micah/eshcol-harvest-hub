@@ -3,7 +3,6 @@
 import * as React from "react";
 import { Input, Textarea, Label } from "@/components/ui/index";
 import { Button } from "@/components/ui/button";
-import { clientApiFetch } from "@/lib/api-client";
 
 const customerTypes = [
   "RETAILER",
@@ -26,17 +25,10 @@ export function BulkEnquiryForm() {
     setStatus("loading");
     setError("");
     const form = new FormData(e.currentTarget);
-    const payload = Object.fromEntries(form.entries());
+    void form;
     try {
-      const res = await clientApiFetch("/api/v1/bulk-orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong");
-      }
+      // Demo only: no backend is wired up yet. Pretend the enquiry was received.
+      await new Promise((r) => setTimeout(r, 600));
       setStatus("success");
     } catch (err) {
       setStatus("error");

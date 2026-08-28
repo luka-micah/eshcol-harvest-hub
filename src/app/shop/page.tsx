@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import { serverApiFetch } from "@/lib/server-api";
 import { ProductCard } from "@/components/marketing/ProductCard";
 import { buildMetadata } from "@/lib/seo";
-
-export const dynamic = "force-dynamic";
+import { products } from "@/data/catalog";
 
 export const metadata: Metadata = buildMetadata({
   title: "Shop Fresh Produce",
@@ -11,10 +9,7 @@ export const metadata: Metadata = buildMetadata({
   path: "/shop",
 });
 
-export default async function ShopPage() {
-  const productsRes = await serverApiFetch("/api/v1/products");
-  const products: any[] = (await productsRes.json()).products ?? [];
-
+export default function ShopPage() {
   return (
     <div className="container-px py-16">
       <div className="mx-auto max-w-3xl text-center">
@@ -39,4 +34,3 @@ export default async function ShopPage() {
     </div>
   );
 }
-

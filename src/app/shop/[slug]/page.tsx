@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { serverApiFetch } from "@/lib/server-api";
 import { AddToCartPanel } from "@/components/shop/AddToCartPanel";
 import { Badge } from "@/components/ui/index";
 import { formatNaira } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
 import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/constants";
-
-export const dynamic = "force-dynamic";
+import { getProductBySlug } from "@/data/catalog";
 
 export async function generateMetadata({
   params,
@@ -16,12 +14,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pres = await serverApiFetch("/api/v1/products/" + slug);
-  const product = pres.ok ? (await pres.json()).product : null;
+  const product = getProductBySlug(slug);
   if (!product) return buildMetadata({ title: "Product not found" });
   return buildMetadata({
-    title: product.metaTitle ?? product.name,
-    description: product.metaDescription ?? product.shortDescription ?? product.description ?? "",
+    title: product.name,
+    description: product.shortDescription ?? product.description ?? "",
     path: `/shop/${product.slug}`,
     image: product.images[0]?.url,
   });
@@ -41,11 +38,10 @@ export default async function ProductDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const pres = await serverApiFetch("/api/v1/products/" + slug);
-  const product = pres.ok ? (await pres.json()).product : null;
+  const product = getProductBySlug(slug);
   if (!product) notFound();
 
-  const availableQty = product.inventory ? product.inventory.availableQty : 0;
+  const availableQty = product.availableQty;
   const soldOut = product.status === "SOLD_OUT" || availableQty <= 0;
 
   return (

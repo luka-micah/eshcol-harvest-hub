@@ -54,9 +54,6 @@ export function Header() {
               </span>
             )}
           </Link>
-          <Link href="/account/login" className="btn-outline hidden h-9 px-3 text-sm sm:inline-flex">
-            Account
-          </Link>
           <button
             className="md:hidden rounded-md p-2"
             aria-label="Toggle menu"
@@ -80,9 +77,6 @@ export function Header() {
                 {item.label}
               </Link>
             ))}
-            <Link href="/account/login" onClick={() => setOpen(false)} className="btn-outline mt-2">
-              Account
-            </Link>
           </nav>
         </div>
       )}

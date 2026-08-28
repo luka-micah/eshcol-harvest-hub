@@ -1,12 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { serverApiFetch } from "@/lib/server-api";
 import { formatDate } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
 import { PLACEHOLDER_POST_IMAGE } from "@/lib/constants";
-
-export const dynamic = "force-dynamic";
+import { getPostBySlug } from "@/data/catalog";
 
 export async function generateMetadata({
   params,
@@ -14,12 +12,11 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const pres = await serverApiFetch("/api/v1/posts/" + slug);
-  const post = pres.ok ? (await pres.json()).post : null;
+  const post = getPostBySlug(slug);
   if (!post) return buildMetadata({ title: "Article not found" });
   return buildMetadata({
-    title: post.metaTitle ?? post.title,
-    description: post.metaDescription ?? post.excerpt ?? "",
+    title: post.title,
+    description: post.excerpt ?? "",
     path: `/farm-journal/${post.slug}`,
     image: post.featuredImage ?? undefined,
   });
@@ -31,8 +28,7 @@ export default async function JournalPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const pres = await serverApiFetch("/api/v1/posts/" + slug);
-  const post = pres.ok ? (await pres.json()).post : null;
+  const post = getPostBySlug(slug);
   if (!post) notFound();
 
   return (

@@ -2,11 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Leaf } from "lucide-react";
 import { buttonClasses } from "@/components/ui/button";
-import { serverApiFetch } from "@/lib/server-api";
 import { ProductCard } from "@/components/marketing/ProductCard";
 import { buildMetadata } from "@/lib/seo";
-
-export const dynamic = "force-dynamic";
+import { products } from "@/data/catalog";
 
 export const metadata: Metadata = buildMetadata({
   title: "Our Produce",
@@ -14,10 +12,7 @@ export const metadata: Metadata = buildMetadata({
   path: "/produce",
 });
 
-export default async function ProducePage() {
-  const productsRes = await serverApiFetch("/api/v1/products");
-  const products: any[] = (await productsRes.json()).products ?? [];
-
+export default function ProducePage() {
   return (
     <div className="container-px py-16">
       <div className="mx-auto max-w-3xl text-center">
@@ -25,7 +20,7 @@ export default async function ProducePage() {
         <h1 className="mt-2 font-heading text-4xl font-bold">Fresh From Eshcol Harvest Hub</h1>
         <p className="mt-4 text-muted-foreground">
           Our produce catalogue is designed to grow with us. We currently focus on fresh bell peppers,
-          with more farm produce arriving in the future — all managed from the admin dashboard.
+          with more farm produce arriving in the future.
         </p>
       </div>
 
@@ -50,4 +45,3 @@ export default async function ProducePage() {
     </div>
   );
 }
-

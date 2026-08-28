@@ -3,13 +3,11 @@ import { Leaf, ShoppingBag, Building2, Truck, MapPin, ShieldCheck } from "lucide
 import Image from "next/image";
 import { PLACEHOLDER_HERO_IMAGE } from "@/lib/constants";
 import { buttonClasses } from "@/components/ui/button";
-import { serverApiFetch } from "@/lib/server-api";
 import { formatNaira } from "@/lib/utils";
 import { SITE } from "@/lib/constants";
 import { ProductCard } from "@/components/marketing/ProductCard";
 import { buildMetadata } from "@/lib/seo";
-
-export const dynamic = "force-dynamic";
+import { products as allProducts } from "@/data/catalog";
 
 export const metadata = buildMetadata({
   title: "Fresh From Our Farm. Grown With Care.",
@@ -17,9 +15,8 @@ export const metadata = buildMetadata({
   path: "/",
 });
 
-export default async function HomePage() {
-  const productsRes = await serverApiFetch("/api/v1/products");
-  const products: any[] = (await productsRes.json()).products ?? [];
+export default function HomePage() {
+  const featured = allProducts.filter((p) => p.featured).slice(0, 3);
 
   return (
     <>
@@ -156,7 +153,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured products */}
-      {products.length > 0 && (
+      {featured.length > 0 && (
         <section className="container-px pb-20">
           <div className="mb-6 flex items-end justify-between">
             <h2 className="font-heading text-3xl font-semibold">Shop Our Produce</h2>
@@ -165,7 +162,7 @@ export default async function HomePage() {
             </Link>
           </div>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {products.slice(0, 3).map((p) => (
+            {featured.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}
           </div>

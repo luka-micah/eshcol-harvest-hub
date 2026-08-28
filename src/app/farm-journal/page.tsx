@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { serverApiFetch } from "@/lib/server-api";
 import { formatDate } from "@/lib/utils";
 import { buildMetadata } from "@/lib/seo";
 import { PLACEHOLDER_POST_IMAGE } from "@/lib/constants";
-
-export const dynamic = "force-dynamic";
+import { getPublishedPosts } from "@/data/catalog";
 
 export const metadata: Metadata = buildMetadata({
   title: "Farm Journal",
@@ -13,9 +11,8 @@ export const metadata: Metadata = buildMetadata({
   path: "/farm-journal",
 });
 
-export default async function FarmJournalPage() {
-  const postsRes = await serverApiFetch("/api/v1/posts");
-  const posts: any[] = (await postsRes.json()).posts ?? [];
+export default function FarmJournalPage() {
+  const posts = getPublishedPosts();
 
   return (
     <div className="container-px py-16">
@@ -53,4 +50,3 @@ export default async function FarmJournalPage() {
     </div>
   );
 }
-

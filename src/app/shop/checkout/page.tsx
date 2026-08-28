@@ -7,9 +7,7 @@ import { useCart } from "@/components/shop/CartProvider";
 import { Input, Textarea, Label } from "@/components/ui/index";
 import { Button } from "@/components/ui/button";
 import { formatNaira } from "@/lib/utils";
-import { clientApiFetch } from "@/lib/api-client";
-
-type FeeState = { fee: number; deliverable: boolean; loading: boolean };
+import { deliveryZones } from "@/data/catalog";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -26,87 +24,27 @@ export default function CheckoutPage() {
     directions: "",
     notes: "",
   });
-  const [fee, setFee] = React.useState<FeeState>({ fee: 0, deliverable: true, loading: false });
   const [status, setStatus] = React.useState<"idle" | "submitting" | "error">("idle");
   const [error, setError] = React.useState("");
 
-  const total = subtotal + (form.fulfilmentType === "DELIVERY" ? fee.fee : 0);
+  const zone = deliveryZones.find(
+    (z) => z.active && z.state.toLowerCase() === form.state.toLowerCase(),
+  );
+  const fee = form.fulfilmentType === "DELIVERY" && zone ? zone.fee : 0;
+  const deliverable = form.fulfilmentType === "PICKUP" || !!zone;
+  const total = subtotal + fee;
 
-  React.useEffect(() => {
-    if (form.fulfilmentType === "PICKUP") {
-      setFee({ fee: 0, deliverable: true, loading: false });
-      return;
-    }
-    if (form.fulfilmentType === "DELIVERY" && !form.state) return;
-    const controller = new AbortController();
-    setFee((f) => ({ ...f, loading: true }));
-    clientApiFetch(
-      `/api/v1/delivery-fee?fulfilmentType=DELIVERY&state=${encodeURIComponent(form.state)}&city=${encodeURIComponent(form.city)}`,
-      { signal: controller.signal },
-    )
-      .then((r) => r.json())
-      .then((d) => setFee({ fee: d.fee ?? 0, deliverable: d.deliverable ?? true, loading: false }))
-      .catch(() => setFee((f) => ({ ...f, loading: false })));
-    return () => controller.abort();
-  }, [form.fulfilmentType, form.state, form.city]);
-
-  async function onSubmit(e: React.FormEvent) {
+  function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
-    if (form.fulfilmentType === "DELIVERY" && !fee.deliverable) {
+    if (form.fulfilmentType === "DELIVERY" && !deliverable) {
       setError("Delivery is not available to this location. Please contact the farm.");
       return;
     }
     setStatus("submitting");
-    setError("");
-
-    const payload = {
-      customer: {
-        fullName: form.fullName,
-        email: form.email,
-        phone: form.phone,
-      },
-      fulfilmentType: form.fulfilmentType,
-      delivery:
-        form.fulfilmentType === "DELIVERY"
-          ? {
-              line1: form.line1,
-              city: form.city,
-              state: form.state,
-              directions: form.directions,
-            }
-          : undefined,
-      notes: form.notes,
-      items: items.map((i) => ({ productId: i.productId, quantity: i.quantity })),
-    };
-
-    try {
-      const orderRes = await clientApiFetch("/api/v1/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      if (!orderRes.ok) {
-        const d = await orderRes.json().catch(() => ({}));
-        throw new Error(d.error || "Could not create order");
-      }
-      const order = await orderRes.json();
-
-      const payRes = await clientApiFetch("/api/v1/payments/initialize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ reference: order.reference, email: form.email }),
-      });
-      const pay = await payRes.json();
-      if (!payRes.ok || !pay.authorizationUrl) {
-        throw new Error(pay.error || "Could not initialize payment");
-      }
-      clear();
-      window.location.href = pay.authorizationUrl;
-    } catch (err) {
-      setStatus("error");
-      setError(err instanceof Error ? err.message : "Something went wrong");
-    }
+    // Demo only: no backend/payment is wired up. Clear the cart and show confirmation.
+    clear();
+    router.push("/shop/checkout/callback?status=success");
   }
 
   if (!loaded) {
@@ -185,8 +123,7 @@ export default function CheckoutPage() {
                   <Label htmlFor="directions">Additional directions</Label>
                   <Textarea id="directions" value={form.directions} onChange={(e) => setForm({ ...form, directions: e.target.value })} />
                 </div>
-                {fee.loading && <p className="text-sm text-muted-foreground">Calculating delivery fee…</p>}
-                {!fee.deliverable && (
+                {!deliverable && (
                   <p className="text-sm text-destructive">Outside service area — please contact the farm.</p>
                 )}
               </div>
@@ -211,16 +148,16 @@ export default function CheckoutPage() {
           <div className="mt-4 space-y-1 border-t border-border pt-4 text-sm">
             <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatNaira(subtotal)}</span></div>
             {form.fulfilmentType === "DELIVERY" && (
-              <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>{formatNaira(fee.fee)}</span></div>
+              <div className="flex justify-between"><span className="text-muted-foreground">Delivery</span><span>{formatNaira(fee)}</span></div>
             )}
             <div className="flex justify-between font-semibold"><span>Total</span><span>{formatNaira(total)}</span></div>
           </div>
           {status === "error" && <p className="mt-3 text-sm text-destructive">{error}</p>}
-          <Button type="submit" disabled={status === "submitting" || !fee.deliverable} className="mt-4 w-full" size="lg">
-            {status === "submitting" ? "Processing…" : "Pay with Paystack"}
+          <Button type="submit" disabled={status === "submitting" || !deliverable} className="mt-4 w-full" size="lg">
+            {status === "submitting" ? "Processing…" : "Place Order"}
           </Button>
           <p className="mt-2 text-xs text-muted-foreground">
-            You will be redirected to Paystack to complete payment securely.
+            Demo store — no real payment is processed.
           </p>
         </div>
       </form>

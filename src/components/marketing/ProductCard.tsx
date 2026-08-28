@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { formatNaira } from "@/lib/utils";
 import { Badge } from "@/components/ui/index";
-import type { ProductListItem } from "@/services/products/product.service";
+import type { Product } from "@/data/catalog";
 import { PLACEHOLDER_PRODUCT_IMAGE } from "@/lib/constants";
 
 const statusTone: Record<string, "success" | "warning" | "danger" | "info" | "default"> = {
@@ -21,7 +21,7 @@ const statusLabel: Record<string, string> = {
   SOLD_OUT: "Sold Out",
 };
 
-export function ProductCard({ product }: { product: ProductListItem }) {
+export function ProductCard({ product }: { product: Product }) {
   return (
     <Link href={`/shop/${product.slug}`} className="group block overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md">
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary/40">
