@@ -18,6 +18,7 @@ export default function CheckoutPage() {
     email: "",
     phone: "",
     fulfilmentType: "DELIVERY" as "PICKUP" | "DELIVERY",
+    paymentMethod: "whatsapp" as "whatsapp" | "form",
     line1: "",
     city: "",
     state: "Plateau",
@@ -34,6 +35,23 @@ export default function CheckoutPage() {
   const deliverable = form.fulfilmentType === "PICKUP" || !!zone;
   const total = subtotal + fee;
 
+  function buildOrderSummary() {
+    const lines = items.map((i) => `• ${i.name} × ${i.quantity} — ${formatNaira(i.unitPrice * i.quantity)}`);
+    const fulfilment = form.fulfilmentType === "DELIVERY"
+      ? `Delivery to ${form.line1}, ${form.city}, ${form.state}`
+      : "Farm pickup";
+    return [
+      "Hello Eshcol Harvest Hub 👋, I'd like to place an order:",
+      ...lines,
+      `Subtotal: ${formatNaira(subtotal)}`,
+      form.fulfilmentType === "DELIVERY" ? `Delivery: ${formatNaira(fee)}` : "Delivery: Free (pickup)",
+      `Total: ${formatNaira(total)}`,
+      `Name: ${form.fullName}`,
+      `Phone: ${form.phone}`,
+      `Fulfilment: ${fulfilment}`,
+    ].join("\n");
+  }
+
   function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (items.length === 0) return;
@@ -42,9 +60,25 @@ export default function CheckoutPage() {
       return;
     }
     setStatus("submitting");
-    // Demo only: no backend/payment is wired up. Clear the cart and show confirmation.
+    const summary = buildOrderSummary();
+
+    if (form.paymentMethod === "whatsapp") {
+      const number = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "").replace(/\D/g, "");
+      const waUrl = `https://wa.me/${number}?text=${encodeURIComponent(summary)}`;
+      clear();
+      window.location.href = waUrl;
+      return;
+    }
+
+    // Payment form: carry the summary to the form page, then clear the cart.
     clear();
-    router.push("/shop/checkout/callback?status=success");
+    const params = new URLSearchParams({
+      name: form.fullName,
+      phone: form.phone,
+      total: String(total),
+      summary,
+    });
+    router.push(`/shop/checkout/pay?${params.toString()}`);
   }
 
   if (!loaded) {
@@ -134,6 +168,46 @@ export default function CheckoutPage() {
             )}
           </section>
         </div>
+
+        <section className="card space-y-4 lg:col-span-3">
+          <h2 className="font-heading text-lg font-semibold">Payment Method</h2>
+          <div className="space-y-3">
+            <label
+              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm ${
+                form.paymentMethod === "whatsapp" ? "border-primary bg-primary/10" : "border-border"
+              }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                className="mt-1"
+                checked={form.paymentMethod === "whatsapp"}
+                onChange={() => setForm({ ...form, paymentMethod: "whatsapp" })}
+              />
+              <span>
+                <span className="block font-medium text-foreground">Chat on WhatsApp</span>
+                <span className="block text-muted-foreground">Send your order details to our WhatsApp line to arrange payment.</span>
+              </span>
+            </label>
+            <label
+              className={`flex cursor-pointer items-start gap-3 rounded-lg border p-3 text-sm ${
+                form.paymentMethod === "form" ? "border-primary bg-primary/10" : "border-border"
+              }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                className="mt-1"
+                checked={form.paymentMethod === "form"}
+                onChange={() => setForm({ ...form, paymentMethod: "form" })}
+              />
+              <span>
+                <span className="block font-medium text-foreground">Pay with card (form)</span>
+                <span className="block text-muted-foreground">Continue to a secure payment form to complete your order.</span>
+              </span>
+            </label>
+          </div>
+        </section>
 
         <div className="card h-fit">
           <h2 className="font-heading text-lg font-semibold">Order Summary</h2>
