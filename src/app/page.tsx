@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { Leaf, ShoppingBag, Building2, Truck, MapPin, ShieldCheck } from "lucide-react";
 import Image from "next/image";
-import { PLACEHOLDER_HERO_IMAGE } from "@/lib/constants";
 import { buttonClasses } from "@/components/ui/button";
 import { formatNaira } from "@/lib/utils";
 import { SITE } from "@/lib/constants";
@@ -48,10 +47,10 @@ export default function HomePage() {
           <div className="flex items-center justify-center">
             <div className="relative aspect-[4/5] w-full max-w-sm overflow-hidden rounded-3xl bg-primary/5 ring-1 ring-border">
               <Image
-                src={PLACEHOLDER_HERO_IMAGE}
-                alt="Fresh bell peppers grown at Eshcol Harvest Hub in Jos"
+                src="https://res.cloudinary.com/dxx0r7sdm/image/upload/v1787959262/6432892-removebg-preview_wmqtvu.png"
+                alt="Fresh bell peppers from Eshcol Harvest Hub, Jos"
                 fill
-                className="object-cover"
+                className="object-contain p-4"
                 sizes="(max-width: 768px) 100vw, 384px"
                 priority
               />

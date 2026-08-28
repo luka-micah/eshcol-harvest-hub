@@ -62,4 +62,3 @@ export function canTransition(from: string, to: string): boolean {
 /** Local placeholder artwork used when a record has no real image (dev/demo). */
 export const PLACEHOLDER_PRODUCT_IMAGE = "/placeholder-product.svg";
 export const PLACEHOLDER_POST_IMAGE = "/placeholder-post.svg";
-export const PLACEHOLDER_HERO_IMAGE = "/farm-hero.svg";
