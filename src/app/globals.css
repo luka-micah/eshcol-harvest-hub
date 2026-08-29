@@ -50,9 +50,18 @@
   * {
     @apply border-border;
   }
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "rlig" 1, "calt" 1;
+    overflow-x: hidden;
+  }
+  img, video, canvas, svg {
+    max-width: 100%;
+    height: auto;
   }
   h1, h2, h3, h4 {
     @apply font-heading tracking-tight;

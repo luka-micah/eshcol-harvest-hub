@@ -15,10 +15,10 @@ export default function FarmJournalPage() {
   const posts = getPublishedPosts();
 
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">Farm Journal</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Stories From the Farm</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Stories From the Farm</h1>
         <p className="mt-4 text-muted-foreground">
           Growing tips, farm life and everything you want to know about our fresh produce.
         </p>

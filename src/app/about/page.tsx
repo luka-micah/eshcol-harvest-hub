@@ -12,10 +12,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default function AboutPage() {
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-3xl">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">About</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Growing With Purpose</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Growing With Purpose</h1>
         <p className="mt-6 text-lg text-muted-foreground">
           {SITE.name} is a farm based in Jos, Plateau State, Nigeria, focused on cultivating quality
           fresh produce and building meaningful connections between the farm and the people who depend

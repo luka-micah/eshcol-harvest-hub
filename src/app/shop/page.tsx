@@ -11,10 +11,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default function ShopPage() {
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">Shop</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Fresh From the Farm</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Fresh From the Farm</h1>
         <p className="mt-4 text-muted-foreground">
           Choose your quantity, add to cart and choose farm pickup or delivery at checkout.
         </p>

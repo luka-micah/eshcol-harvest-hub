@@ -21,12 +21,12 @@ export default function HomePage() {
     <>
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-b from-secondary/60 to-background">
-        <div className="container-px grid gap-10 py-16 md:grid-cols-2 md:py-24">
+        <div className="container-px grid gap-10 py-14 sm:py-20 md:grid-cols-2 md:py-24">
           <div className="flex flex-col justify-center">
             <span className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
               <MapPin className="h-3.5 w-3.5" /> {SITE.location}
             </span>
-            <h1 className="font-heading text-4xl font-bold leading-tight md:text-5xl">
+            <h1 className="font-heading text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
               Fresh From Our Farm. <span className="text-primary">Grown With Care.</span>
             </h1>
             <p className="mt-4 max-w-lg text-lg text-muted-foreground">{SITE.supporting}</p>
@@ -105,7 +105,7 @@ export default function HomePage() {
 
       {/* Audience sections */}
       <section className="container-px pb-16">
-        <div className="grid gap-6 md:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           <AudienceCard
             icon={<ShoppingBag className="h-6 w-6" />}
             title="Fresh Produce for Your Home"
@@ -133,7 +133,7 @@ export default function HomePage() {
       {/* How it works */}
       <section className="container-px pb-16">
         <h2 className="mb-8 text-center font-heading text-3xl font-semibold">How It Works</h2>
-        <div className="grid gap-6 md:grid-cols-4">
+        <div className="grid gap-6 grid-cols-2 md:grid-cols-4">
           {[
             { n: "01", t: "Choose", d: "Browse available produce and select the quantity you need." },
             { n: "02", t: "Order", d: "Place an online order or contact us for larger requirements." },

@@ -14,10 +14,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default function ProducePage() {
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">Our Produce</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Fresh From Eshcol Harvest Hub</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Fresh From Eshcol Harvest Hub</h1>
         <p className="mt-4 text-muted-foreground">
           Our produce catalogue is designed to grow with us. We currently focus on fresh bell peppers,
           with more farm produce arriving in the future.

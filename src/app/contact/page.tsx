@@ -13,10 +13,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default function ContactPage() {
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-2xl text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">Contact</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Let&apos;s Talk</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Let&apos;s Talk</h1>
         <p className="mt-4 text-muted-foreground">
           Have a question about our produce, bulk supply, pickup or delivery? We would love to hear
           from you.

@@ -14,10 +14,10 @@ export const metadata: Metadata = buildMetadata({
 
 export default function ForBusinessesPage() {
   return (
-    <div className="container-px py-16">
+    <div className="container-px py-12 sm:py-16">
       <div className="mx-auto max-w-3xl text-center">
         <p className="text-sm font-medium uppercase tracking-wide text-primary">For Businesses</p>
-        <h1 className="mt-2 font-heading text-4xl font-bold">Fresh Supply, Built for Business</h1>
+        <h1 className="mt-2 font-heading text-3xl font-bold sm:text-4xl">Fresh Supply, Built for Business</h1>
         <p className="mt-4 text-muted-foreground">
           Whether you run a shop, restaurant, hotel or food business, Eshcol Harvest Hub supplies
           quality bell peppers with reliable, flexible ordering. Tell us what you need and we&apos;ll
@@ -25,7 +25,7 @@ export default function ForBusinessesPage() {
         </p>
       </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-3">
+      <div className="mt-12 grid gap-6 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Segment
           icon={<Store className="h-6 w-6" />}
           title="Retailers"
